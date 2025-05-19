@@ -17,8 +17,19 @@ class CreateMahasiswaTable extends Migration
             ],
             'nim' => [
                 'type'       => 'VARCHAR',
-                'constraint' => 20,
+                'constraint' => 15,
                 'unique'     => true,
+
+            ],
+            'foto' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '100',
+                'null'       => true,
+            ],
+            'foto_ktp' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '100',
+                'null'       => true,
             ],
             'nama_lengkap' => [
                 'type'       => 'VARCHAR',
@@ -36,7 +47,7 @@ class CreateMahasiswaTable extends Migration
             ],
             'angkatan' => [
                 'type'       => 'INT',
-                'constraint' => 4, 
+                'constraint' => 4,
                 'null'       => true,
             ],
             'email' => [
@@ -45,6 +56,12 @@ class CreateMahasiswaTable extends Migration
                 'unique'     => true,
                 'null'       => true,
             ],
+            // 'id_dosen' => [
+            //     'type'       => 'INT',
+            //     'constraint' => 11,
+            //     'unsigned'   => true,
+            //     'null'       => true,
+            // ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,
@@ -53,9 +70,10 @@ class CreateMahasiswaTable extends Migration
                 'type' => 'DATETIME',
                 'null' => true,
             ],
-            // Anda bisa tambahkan kolom lain seperti 'alamat', 'no_telepon', dll.
+
         ]);
         $this->forge->addKey('id', true);
+        // $this->forge->addForeignKey('id_dosen', 'dosen', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('mahasiswa');
     }
 

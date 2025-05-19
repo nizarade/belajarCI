@@ -18,7 +18,7 @@ class MahasiswaController extends BaseController
     /**
      * Display a listing of the resource.
      */
-     public function index()
+    public function index()
     {
         $itemsPerPage = 10;
         $pagerGroupName = 'mahasiswa'; // Nama grup pager, berguna jika ada >1 pager di halaman
@@ -28,7 +28,7 @@ class MahasiswaController extends BaseController
         $currentPage = $this->request->getVar('page_' . $pagerGroupName) ? (int)$this->request->getVar('page_' . $pagerGroupName) : 1;
 
         $data = [
-            'judul_halaman' => 'Daftar Mahasiswa (CI4 - Database)',
+            'judul_halaman' => 'Daftar Mahasiswa',
             // Gunakan paginate() dari model
             'mahasiswa_data' => $this->mahasiswaModel->orderBy('nim', 'ASC')->paginate($itemsPerPage, $pagerGroupName),
             // Kirim pager instance ke view
@@ -49,7 +49,7 @@ class MahasiswaController extends BaseController
             'judul_halaman' => 'Tambah Data Mahasiswa',
             'validation' => \Config\Services::validation() // Kirim service validasi ke view
         ];
-        return view('mahasiswa_form_tambah', $data); // Buat view ini nanti
+        return view('mahasiswa_form', $data); // Buat view ini nanti
     }
 
     /**
@@ -61,6 +61,20 @@ class MahasiswaController extends BaseController
         // Aturan validasi
         $rules = [
             'nim' => 'required|is_unique[mahasiswa.nim]|max_length[20]',
+            // 'foto'          => [ 
+            //     'label' => 'Foto Profil',
+            //     'rules' => 'uploaded[foto]' 
+            //         . '|is_image[foto]' 
+            //         . '|mime_in[foto,image/jpg,image/jpeg,image/gif,image/png]' 
+            //         // . '|max_size[foto,2048]', 
+            // ],
+            // 'foto_ktp'      => [ 
+            //     'label' => 'Foto KTP',
+            //     'rules' => 'uploaded[foto_ktp]'
+            //         . '|is_image[foto_ktp]'
+            //         . '|mime_in[foto_ktp,image/jpg,image/jpeg,image/png]'
+            //         // . '|max_size[foto_ktp,2048]',
+            // ],
             'nama_lengkap' => 'required|max_length[100]',
             'program_studi' => 'permit_empty|max_length[100]',
             'fakultas' => 'permit_empty|max_length[100]',
@@ -73,21 +87,31 @@ class MahasiswaController extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        $fileFoto = $this->request->getFile('foto');
+        $fileFotoKTP = $this->request->getFile('foto_ktp');
+        
+
+        $namaFoto = $fileFoto->getRandomName();
+        $fileFoto->move('img/mahasiswa', $namaFoto);
+
+        $namaFotoKTP = $fileFotoKTP->getRandomName();
+        $fileFotoKTP->move('img/mahasiswa', $namaFotoKTP);
         // Ambil data dari POST request
-        $dataToSave = [
+        $this->mahasiswaModel->save( [
             'nim' => $this->request->getPost('nim'),
+            'foto' => $namaFoto,
+            'foto_ktp' => $namaFotoKTP,
             'nama_lengkap' => $this->request->getPost('nama_lengkap'),
             'program_studi' => $this->request->getPost('program_studi'),
             'fakultas' => $this->request->getPost('fakultas'),
             'angkatan' => $this->request->getPost('angkatan'),
             'email' => $this->request->getPost('email'),
-        ];
-
-        if ($this->mahasiswaModel->insert($dataToSave)) {
+        ]);
+        // if ($this->mahasiswaModel->save($dataToSave)) {
             return redirect()->to('/mahasiswa')->with('success', 'Data mahasiswa berhasil ditambahkan.');
-        } else {
-            return redirect()->back()->withInput()->with('error', 'Gagal menambahkan data mahasiswa.');
-        }
+        // } else {
+            // return redirect()->back()->withInput()->with('error', 'Gagal menambahkan data mahasiswa.');
+        // }
     }
 
 
@@ -108,7 +132,7 @@ class MahasiswaController extends BaseController
             'validation' => \Config\Services::validation() // Kirim service validasi ke view
         ];
         // dd($data);
-        return view('mahasiswa_form_edit', $data); // Buat view ini nanti
+        return view('mahasiswa_form', $data); // Buat view ini nanti
     }
 
     /**
@@ -117,14 +141,11 @@ class MahasiswaController extends BaseController
     public function update($id = null)
     {
 
-      
+
         $mahasiswa = $this->mahasiswaModel->find($id);
         if (!$mahasiswa) {
             throw PageNotFoundException::forPageNotFound('Mahasiswa dengan ID ' . $id . ' tidak ditemukan.');
         }
-
-          // dd($id);
-
 
         $nimRule = 'required|max_length[20]|is_unique[mahasiswa.nim,id,' . $id . ']';
         $emailRule = 'permit_empty|valid_email|is_unique[mahasiswa.email,id,' . $id . ']';
@@ -142,7 +163,6 @@ class MahasiswaController extends BaseController
             // Jika validasi gagal, kembali ke form edit dengan error
 
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
-
         }
 
         // Ambil data dari POST request
@@ -156,7 +176,7 @@ class MahasiswaController extends BaseController
         ];
 
         if ($this->mahasiswaModel->update($id, $dataToUpdate)) {
-            return redirect()->to('/mahasiswa');
+            return redirect()->to('/mahasiswa')->with('success', 'Data mahasiswa berhasil diperbarui.');
         } else {
             // Seharusnya, jika model->update gagal, dia akan throw exception atau return false
             // Anda bisa tambahkan logging error di sini

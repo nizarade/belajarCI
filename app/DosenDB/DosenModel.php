@@ -4,32 +4,26 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class MahasiswaModel extends Model
+class DosenModel extends Model
 {
-    protected $table            = 'mahasiswa';
+    protected $table            = 'dosen';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'nim',
-        'foto',
-        'foto_ktp',
+        'nidn',
         'nama_lengkap',
         'program_studi',
         'fakultas',
         'angkatan',
-        'email',
-        'id_dosen'
     ];
 
-    public function getDosenPengampu ( $mahasiswaId){
-        $dataMahasiswa = $this->find($mahasiswaId);
-        if($dataMahasiswa && isset($dataMahasiswa['id_dosen'])){
-            $dosenModel = new DosenModel();
-            return $dosenModel->find($dataMahasiswa['id_dosen']);
-        }
+    public function getMahasiswaDiampu($dosenId)
+    {
+        $mahasiswaModel = new MahasiswaModel();
+        return $mahasiswaModel->where('id_dosen', $dosenId)->findAll();
     }
 
     protected bool $allowEmptyInserts = false;
