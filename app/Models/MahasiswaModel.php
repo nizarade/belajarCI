@@ -17,6 +17,7 @@ class MahasiswaModel extends Model
         'foto',
         'foto_ktp',
         'nama_lengkap',
+        'alamat',
         'program_studi',
         'fakultas',
         'angkatan',
@@ -30,6 +31,13 @@ class MahasiswaModel extends Model
             $dosenModel = new DosenModel();
             return $dosenModel->find($dataMahasiswa['id_dosen']);
         }
+    }
+
+    public function search($keyword = null){
+        if (empty($keyword) ) {
+            return $this;
+        }
+        return $this->groupStart()->like('nama_lengkap', $keyword)->orLike('nim', $keyword)->orLike('email', $keyword)->orLike('angkatan', $keyword)->orLike('program_studi', $keyword)->orLike('fakultas', $keyword)->groupEnd();
     }
 
     protected bool $allowEmptyInserts = false;

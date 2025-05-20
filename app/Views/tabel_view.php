@@ -11,7 +11,7 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
+            background-color: rgb(143, 168, 225);
             color: #333;
             padding-top: 20px;
         }
@@ -37,7 +37,7 @@
             margin-top: 25px;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
         }
 
         .table thead th {
@@ -80,23 +80,29 @@
             padding: 6px 12px;
             font-size: 0.875em;
         }
+
         .actions form {
             display: inline-block;
         }
 
-        img.foto-mhs, img.foto-ktp-mhs {
+        img.foto-mhs,
+        img.foto-ktp-mhs {
             object-fit: cover;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
         }
-        img.foto-mhs:hover, img.foto-ktp-mhs:hover {
+
+        img.foto-mhs:hover,
+        img.foto-ktp-mhs:hover {
             transform: scale(1.05);
         }
+
         img.foto-mhs {
             width: 60px;
             height: 90px;
         }
+
         img.foto-ktp-mhs {
             width: 90px;
             height: 60px;
@@ -105,21 +111,26 @@
         /* Penyesuaian untuk paginasi Bootstrap (umumnya sudah dicakup oleh Bootstrap CSS) */
         .pagination {
             margin-top: 30px;
-            justify-content: center; /* Pusatkan paginasi */
+            justify-content: center;
+            /* Pusatkan paginasi */
         }
+
         /* Style ini akan diterapkan jika template pager menghasilkan class yang benar */
         .pagination .page-item.active .page-link {
             background-color: #3498db;
             border-color: #3498db;
             color: white;
         }
+
         .pagination .page-link {
             color: #3498db;
         }
+
         .pagination .page-link:hover {
             color: #2980b9;
             background-color: #e9ecef;
         }
+
         .pagination .page-item.disabled .page-link {
             color: #6c757d;
             pointer-events: none;
@@ -137,6 +148,7 @@
             border-color: #2ecc71;
             font-weight: 500;
         }
+
         .btn-add-mahasiswa:hover {
             background-color: #28b662;
             border-color: #28b662;
@@ -146,6 +158,19 @@
             border-radius: 8px;
         }
 
+        .search-form {
+            margin-bottom: 20px;
+        }
+
+        .search-form .form-control {
+            border-radius: 0.375rem 0 0 0.375rem;
+            /* Sesuaikan jika tombol di kanan */
+        }
+
+        .search-form .btn {
+            border-radius: 0 0.375rem 0.375rem 0;
+            /* Sesuaikan jika input di kiri */
+        }
     </style>
 </head>
 
@@ -153,10 +178,22 @@
     <div class="container container-custom">
         <h1 class="page-title"><?= esc($judul_halaman) ?></h1>
 
-        <div class="mb-4 d-flex justify-content-end">
-            <a href="<?= site_url('mahasiswa/create') ?>" class="btn btn-add-mahasiswa text-white">
-                <i class="fas fa-plus me-1"></i> Tambah Mahasiswa
-            </a>
+        <div class="row">
+            <div class="col-md-6 d-flex justify-content-md-start align-items-start">
+                <a href="<?= site_url('mahasiswa/create') ?>" class="btn btn-add-mahasiswa text-white">
+                    <i class="fas fa-plus me-1"></i> Tambah Mahasiswa
+                </a>
+            </div>
+            <div class="col-md-6">
+                <!-- Form Pencarian -->
+                <form action="<?= site_url('mahasiswa') ?>" method="get" class="search-form">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Cari nama mahasiswa..." name="keyword" value="<?= esc($keyword ?? '') ?>">
+                        <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i> Cari</button>
+                    </div>
+                </form>
+            </div>
+            
         </div>
 
         <?php $session = session(); ?>
@@ -168,7 +205,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <?php endif; ?>
-        
+
         <?php if ($session->getFlashdata('error')): ?>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <i class="fas fa-times-circle me-2"></i>
@@ -206,16 +243,19 @@
                                 <td><?= esc($mhs['angkatan']) ?></td>
                                 <td><?= esc($mhs['email']) ?></td>
                                 <td class="actions text-center">
-                                    <a href="<?= site_url('mahasiswa/edit/' . $mhs['id']) ?>" class="btn btn-sm btn-warning" title="Edit">
-                                        <i class="fas fa-edit"></i> <span class="d-none d-md-inline">Edit</span>
-                                    </a>
-                                    <form action="<?= site_url('mahasiswa/delete/' . esc($mhs['id'], 'url')) ?>" method="post" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data mahasiswa ini: <?= esc($mhs['nama_lengkap']) ?>?');">
-                                        <?= csrf_field() ?>
-                                        <input type="hidden" name="_method" value="DELETE">
-                                        <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
-                                            <i class="fas fa-trash-alt"></i> <span class="d-none d-md-inline">Hapus</span>
-                                        </button>
-                                    </form>
+                                    <div class="d-inline-flex gap-1">
+
+                                        <a href="<?= site_url('mahasiswa/edit/' . $mhs['id']) ?>" class="btn btn-sm btn-warning" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="<?= site_url('mahasiswa/delete/' . esc($mhs['id'], 'url')) ?>" method="post" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data mahasiswa ini: <?= esc($mhs['nama_lengkap']) ?>?');">
+                                            <?= csrf_field() ?>
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -242,7 +282,11 @@
         <?php else: ?>
             <div class="alert alert-info no-data-message text-center" role="alert">
                 <i class="fas fa-info-circle me-2"></i>
-                Tidak ada data mahasiswa untuk ditampilkan.
+                <?php if (isset($keyword) && !empty($keyword)): ?>
+                    Tidak ada data mahasiswa yang cocok dengan kata kunci "<?= esc($keyword) ?>".
+                <?php else: ?>
+                    Tidak ada data mahasiswa untuk ditampilkan.
+                <?php endif; ?>
             </div>
         <?php endif; ?>
     </div>

@@ -8,7 +8,8 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa; /* Latar belakang Bootstrap standar */
+            background: #2A7B9B;
+background: linear-gradient(90deg, rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%); /* Latar belakang Bootstrap standar */
             padding-top: 1.5rem;
             padding-bottom: 1.5rem;
         }
@@ -128,7 +129,7 @@
                             </div>
                         <?php endif; ?>
                         <?php if (isset($is_edit_mode) && $is_edit_mode && !empty($mahasiswa['foto_ktp'])): ?>
-                            <small class="form-text text-muted">Kosongkan jika tidak ingin mengubah KTP.</small>
+                            <small class="form-text bg-info text-muted">Kosongkan jika tidak ingin mengubah KTP.</small>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -146,6 +147,22 @@
                     <?php if (!empty($validationErrors['nama_lengkap'])) : ?>
                         <div class="invalid-feedback d-block">
                             <?= esc($validationErrors['nama_lengkap']) ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <div class="mb-3">
+                    <label for="alamat" class="form-label">Alamat <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                        <input type="text"
+                            class="form-control <?= (!empty($validationErrors['nama_lengkap'])) ? 'is-invalid' : '' ?>"
+                            id="alamat" name="alamat" value="<?= esc(old('alamat', $mahasiswa['alamat'] ?? '')) ?>"
+                            placeholder="Alamat Lengkap Sesuai Identitas">
+                    </div>
+                    <?php if (!empty($validationErrors['alamat'])) : ?>
+                        <div class="invalid-feedback d-block">
+                            <?= esc($validationErrors['alamat']) ?>
                         </div>
                     <?php endif; ?>
                 </div>

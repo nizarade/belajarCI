@@ -23,6 +23,12 @@ class MahasiswaController extends BaseController
         $itemsPerPage = 10;
         $pagerGroupName = 'mahasiswa'; // Nama grup pager, berguna jika ada >1 pager di halaman
 
+        $keyword = $this->request->getGet('keyword');
+
+        $mahasiswaQuery = $this->mahasiswaModel->search($keyword);
+
+      
+
         // Dapatkan halaman saat ini dari query string, default ke 1 jika tidak ada
         // CI4 Pager akan otomatis menggunakan ?page_NAMAGRUP=X
         $currentPage = $this->request->getVar('page_' . $pagerGroupName) ? (int)$this->request->getVar('page_' . $pagerGroupName) : 1;
@@ -30,11 +36,12 @@ class MahasiswaController extends BaseController
         $data = [
             'judul_halaman' => 'Daftar Mahasiswa',
             // Gunakan paginate() dari model
-            'mahasiswa_data' => $this->mahasiswaModel->orderBy('nim', 'ASC')->paginate($itemsPerPage, $pagerGroupName),
+            'mahasiswa_data' => $mahasiswaQuery->orderBy('nim', 'ASC')->paginate($itemsPerPage, $pagerGroupName),
             // Kirim pager instance ke view
             'pager' => $this->mahasiswaModel->pager,
             'currentPage' => $currentPage, // Opsional, untuk info tambahan jika perlu
-            'itemsPerPage' => $itemsPerPage // Opsional, untuk info tambahan jika perlu
+            'itemsPerPage' => $itemsPerPage, // Opsional, untuk info tambahan jika perlu
+            'keyword' => $keyword
         ];
         return view('tabel_view', $data); // Sesuaikan nama view jika berbeda
     }
@@ -131,7 +138,6 @@ class MahasiswaController extends BaseController
             'mahasiswa' => $mahasiswa,
             'validation' => \Config\Services::validation() // Kirim service validasi ke view
         ];
-        // dd($data);
         return view('mahasiswa_form', $data); // Buat view ini nanti
     }
 
@@ -153,6 +159,7 @@ class MahasiswaController extends BaseController
         $rules = [
             'nim' => $nimRule,
             'nama_lengkap' => 'required|max_length[100]',
+            'alamat' => 'permit_empty|max_length[100]',
             'program_studi' => 'permit_empty|max_length[100]',
             'fakultas' => 'permit_empty|max_length[100]',
             'angkatan' => 'permit_empty|integer|exact_length[4]',

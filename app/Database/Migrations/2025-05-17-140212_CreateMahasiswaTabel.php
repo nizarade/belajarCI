@@ -35,6 +35,11 @@ class CreateMahasiswaTable extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => '100',
             ],
+            'alamat' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '100',
+                'null'       => true,
+            ],
             'program_studi' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '100',
